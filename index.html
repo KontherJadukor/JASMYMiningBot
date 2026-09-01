@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JASMY Mining Bot</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); color: #fff; padding-bottom: 80px; height: 100vh; overflow-y: auto; }
@@ -18,12 +17,11 @@
         .balance-box { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .balance { font-size: 32px; font-weight: bold; color: #38bdf8; margin: 10px 0; }
         .btn { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); }
-        .wallet-btn { background: #238636; box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4); margin-bottom: 15px; }
         
         .section { display: none; }
         .active-section { display: block; }
         
-        .boost-card { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .boost-card { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
         .boost-info { text-align: left; }
         .boost-title { font-weight: bold; color: #facc15; font-size: 14px; }
         
@@ -41,65 +39,92 @@
             <span>Welcome,</span>
             <h3 id="userNameDisplay">Miner 👋</h3>
         </div>
-        <span id="userStatus" style="font-size: 12px; color: #8b949e; background: #21262d; padding: 5px 10px; border-radius: 20px; border: 1px solid #30363d;">Not Connected</span>
+        <span id="userStatus" style="font-size: 12px; color: #3fb950; background: #21262d; padding: 5px 10px; border-radius: 20px; border: 1px solid #30363d;">Active</span>
     </div>
 
     <div class="container">
         
         <!-- HOME SECTION -->
         <div id="home" class="section active-section">
-            <button class="btn wallet-btn" id="customConnectBtn" onclick="toggleWalletConnection()">⚡ Connect Telegram Wallet</button>
-            
             <div class="balance-box">
-                <p style="margin: 0; color: #8b949e;">Mined Balance</p>
-                <div class="balance" id="jasmyBalance">0.00 JASMY</div>
-                <p style="margin: 0; font-size: 13px; color: #8b949e;" id="miningStatusText">Status: Tasks Required</p>
+                <p style="margin: 0; color: #8b949e;">Mined JASMY Balance</p>
+                <div class="balance" id="jasmyBalance">0.00000000</div>
+                <p style="margin: 0; font-size: 13px; color: #8b949e;" id="miningStatusText">Status: Complete 5 Tasks to Start Mining</p>
+                <p style="margin-top: 5px; font-size: 11px; color: #38bdf8;" id="miningSpeedText">Speed: 0.000000157546 /s</p>
             </div>
 
-            <button class="btn" id="startMiningBtn" style="opacity: 0.6; background: #21262d; border: 1px solid #30363d;" disabled>🚀 START MINING</button>
+            <button class="btn" id="startMiningBtn" style="opacity: 0.6; background: #21262d; border: 1px solid #30363d;" disabled>🚀 MINING PAUSED (Complete Tasks)</button>
 
-            <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid #30363d;">
-                <h4 style="margin: 0 0 10px 0; color: #58a6ff;">Swap & Withdraw</h4>
-                <p style="font-size: 13px; color: #8b949e; margin: 0 0 15px 0;">Min. 215 JASMY (~$1) required</p>
-                <button class="btn" style="background: #238636; margin: 0;" id="withdrawBtn" onclick="requestWithdrawal()">Request Withdrawal</button>
+            <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid #30363d; text-align: left;">
+                <h4 style="margin: 0 0 10px 0; color: #58a6ff;">Withdrawal</h4>
+                <p style="font-size: 12px; color: #8b949e; margin-bottom: 8px;">Min. withdraw: 0.001 JASMY</p>
+                <input type="text" id="withdrawAddress" placeholder="Enter Wallet Address / USDT Address" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 8px; font-size: 12px; box-sizing: border-box;">
+                <input type="number" id="withdrawAmount" placeholder="Amount to Withdraw" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 10px; font-size: 12px; box-sizing: border-box;">
+                <button class="btn" style="background: #238636; margin: 0;" onclick="requestWithdrawal()">Request Withdrawal (Pending Approval)</button>
             </div>
         </div>
 
-        <!-- SHOP SECTION -->
+        <!-- SHOP SECTION (Manual Boosters) -->
         <div id="shop" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">⚡ Speed Boosters (Unlimited Pass)</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Buy a booster to unlock unlimited mining without 24h task limits.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;">⚡ Speed Boosters (Manual)</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Boost your mining speed instantly by manual payment to admin.</p>
             
+            <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #30363d; text-align: left;">
+                <p style="font-size: 12px; color: #facc15; margin-bottom: 5px;"><b>Admin Wallet (Send USDT/TON):</b></p>
+                <input type="text" value="UQBiH2UGFUIiN4Hwf1nC4lcSifaIPFSETQFp1ScMilW73agn" readonly style="width: 100%; padding: 8px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; border-radius: 6px; font-size: 11px; text-align: center;">
+            </div>
+
             <div class="boost-card">
                 <div class="boost-info">
-                    <div class="boost-title">⚡ Unlimited Booster Pass</div>
-                    <div style="font-size: 12px; color: #8b949e;">Bypasses 24h Task Requirement</div>
+                    <div class="boost-title">⚡ Tier 1: $0.10</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +5 JASMY Speed Bonus</div>
                 </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0;" onclick="buyBoost(2.00)">$2.00</button>
+                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(0.10, 5)">Buy</button>
+            </div>
+            <div class="boost-card">
+                <div class="boost-info">
+                    <div class="boost-title">⚡ Tier 2: $0.50</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +50 JASMY Speed Bonus</div>
+                </div>
+                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(0.50, 50)">Buy</button>
+            </div>
+            <div class="boost-card">
+                <div class="boost-info">
+                    <div class="boost-title">⚡ Tier 3: $1.00</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +100 JASMY Speed Bonus</div>
+                </div>
+                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(1.00, 100)">Buy</button>
+            </div>
+            <div class="boost-card">
+                <div class="boost-info">
+                    <div class="boost-title">⚡ Tier 4: $5.00</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +500 JASMY Speed Bonus</div>
+                </div>
+                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(5.00, 500)">Buy</button>
             </div>
         </div>
 
         <!-- TEAM SECTION -->
         <div id="team" class="section">
             <h2 style="color: #58a6ff; margin-bottom: 5px;">👥 Referral Team</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Invite friends and grow your network.</p>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Invite more friends to increase your mining speed! Each active referral adds +0.0005 speed.</p>
             
             <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #30363d; text-align: left;">
-                <p style="font-size: 12px; color: #8b949e; margin: 0 0 5px 0;">Your Unique Referral Link:</p>
+                <p style="font-size: 12px; color: #8b949e; margin: 0 0 5px 0;">Share your link and earn more speed:</p>
                 <input type="text" id="refLink" readonly style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; border-radius: 6px; box-sizing: border-box; text-align: center; font-size: 12px;">
                 <button class="btn" style="padding: 10px; font-size: 14px; margin-top: 10px;" onclick="copyRefLink()">📋 Copy Link</button>
             </div>
 
-            <h3 style="text-align: left; font-size: 15px; color: #58a6ff; margin-bottom: 10px;">Your Referrals:</h3>
+            <h3 style="text-align: left; font-size: 15px; color: #58a6ff; margin-bottom: 10px;">Your Active Referrals:</h3>
             <div id="refList">
-                <!-- Only referred users will show here -->
+                <div class="ref-item"><span>Friend_Rahim (Task Completed)</span><span style="color: #3fb950;">Active (+0.0005)</span></div>
             </div>
         </div>
 
-        <!-- EARN SECTION -->
+        <!-- EARN SECTION (Tasks 1 to 5) -->
         <div id="earn" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">🎯 Daily Tasks (Mandatory)</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Complete all 5 tasks to enable 24h mining (No token rewards).</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;">🎯 Daily Tasks</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Complete Task 1 to 5 to keep 24-hour mining active.</p>
             
             <div class="boost-card">
                 <div class="boost-info"><div class="boost-title">Task 1</div><div style="font-size: 12px; color: #8b949e;">Visit Link 1</div></div>
@@ -125,13 +150,12 @@
 
         <!-- PAYOUTS SECTION -->
         <div id="payouts" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">💰 Payouts & Withdrawal</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Withdraw your mined JASMY securely.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;">💰 Payouts & History</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Track your withdrawal request status.</p>
             
             <div class="balance-box" style="text-align: left;">
-                <p style="margin: 0; font-size: 13px; color: #8b949e;">Available to Withdraw:</p>
-                <h3 style="color: #38bdf8; margin: 5px 0 15px 0;" id="withdrawableBalance">0.00 JASMY</h3>
-                <button class="btn" style="background: #238636;" onclick="requestWithdrawal()">Confirm Withdrawal</button>
+                <p style="margin: 0; font-size: 13px; color: #8b949e;">Status: <span style="color: #facc15;">Pending Admin Approval</span></p>
+                <h3 style="color: #38bdf8; margin: 5px 0 0 0;" id="payoutHistoryText">No withdrawals yet</h3>
             </div>
         </div>
 
@@ -147,8 +171,6 @@
     </div>
 
     <script>
-        const ADMIN_WALLET = "UQBiH2UGFUIiN4Hwf1nC4lcSifaIPFSETQFp1ScMilW73agn";
-
         const tg = window.Telegram.WebApp;
         tg.expand();
         
@@ -163,10 +185,6 @@
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
         document.getElementById("refLink").value = `https://t.me/JASMYMiningBot?start=user_${userId}`;
 
-        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://jasmy-mining-bot.vercel.app/tonconnect-manifest.json'
-        });
-
         function switchTab(tabId, event) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -174,49 +192,17 @@
             event.currentTarget.classList.add('active');
         }
 
-        // Direct Telegram Wallet Connection
-        async function toggleWalletConnection() {
-            try {
-                if (tonConnectUI.connected) {
-                    await tonConnectUI.disconnect();
-                } else {
-                    // Direct trigger for Telegram Wallet (@wallet)
-                    await tonConnectUI.openModal('telegram-wallet');
-                }
-            } catch (error) {
-                console.error("Wallet error:", error);
-                try {
-                    await tonConnectUI.openModal();
-                } catch (e) {
-                    console.error("Fallback error:", e);
-                }
-            }
-        }
+        let baseSpeed = 0.000000157546;
+        let referralCount = 1; // ধরে নিলাম ১টিভ রেফার আছে
+        let referralBonusSpeed = referralCount * 0.0005;
+        let totalSpeed = baseSpeed + referralBonusSpeed;
 
+        let jasmyBalance = 0.0;
         let isMiningActive = false;
-        let isUnlimited = false;
         let completedTasksCount = 0;
         const totalTasks = 5;
 
-        tonConnectUI.onStatusChange(wallet => {
-            const btn = document.getElementById('customConnectBtn');
-            const status = document.getElementById('userStatus');
-            const startMiningBtn = document.getElementById('startMiningBtn');
-
-            if (wallet) {
-                const address = wallet.account.address;
-                btn.innerText = '✅ ' + address.slice(0, 4) + '...' + address.slice(-4);
-                status.innerText = 'Connected';
-                status.style.color = '#3fb950';
-                startMiningBtn.disabled = false;
-                startMiningBtn.style.opacity = '1';
-                startMiningBtn.style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
-            } else {
-                btn.innerText = '⚡ Connect Telegram Wallet';
-                status.innerText = 'Not Connected';
-                status.style.color = '#8b949e';
-            }
-        });
+        document.getElementById('miningSpeedText').innerText = `Speed: ${totalSpeed.toFixed(8)} /s`;
 
         function handleTask(taskId, targetUrl) {
             const btn = document.getElementById(taskId);
@@ -224,7 +210,7 @@
             btn.disabled = true;
             btn.style.background = '#334155';
             
-            let timeLeft = 10;
+            let timeLeft = 5;
             btn.innerText = `Wait ${timeLeft}s...`;
 
             let timer = setInterval(() => {
@@ -239,41 +225,48 @@
 
                     if (completedTasksCount === totalTasks) {
                         isMiningActive = true;
-                        document.getElementById('miningStatusText').innerText = 'Status: Mining Active (24h)';
-                        alert('All tasks completed! 24-hour mining has started.');
+                        document.getElementById('miningStatusText').innerText = 'Status: Mining Active (24 Hours)';
+                        document.getElementById('startMiningBtn').innerText = '🚀 MINING RUNNING...';
+                        document.getElementById('startMiningBtn').style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
+                        alert('All 5 tasks completed! 24-hour mining has started.');
                     }
                 }
             }, 1000);
         }
 
-        async function buyBoost(priceUSD) {
-            if (!tonConnectUI.connected) {
-                alert('Please connect your Telegram wallet first!');
-                return;
+        // প্রতি সেকেন্ডে মাইনিং ব্যালেন্স আপডেট লজিক
+        setInterval(() => {
+            if (isMiningActive) {
+                jasmyBalance += totalSpeed;
+                document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8) + " JASMY";
             }
+        }, 1000);
 
-            const nanoTons = Math.floor((priceUSD / 5) * 1000000000).toString();
-            const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 600,
-                messages: [{ address: ADMIN_WALLET, amount: nanoTons }]
-            };
-
-            try {
-                await tonConnectUI.sendTransaction(transaction);
-                isUnlimited = true;
-                document.getElementById('miningStatusText').innerText = 'Status: Unlimited Mining Pass Active 🚀';
-                alert('Booster purchased successfully! Your mining is now unlimited.');
-            } catch (e) {
-                alert('Payment cancelled or failed.');
-            }
+        function manualBuy(price, bonusJasmy) {
+            alert(`You selected the $${price} package. Please send $${price} worth of USDT/TON to the admin wallet. After payment, send your TxID to the admin to receive +${bonusJasmy} JASMY bonus!`);
         }
 
         function requestWithdrawal() {
-            if (!tonConnectUI.connected) {
-                alert('Please connect your Telegram wallet to withdraw!');
+            const address = document.getElementById('withdrawAddress').value;
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+            if (!address) {
+                alert('Please enter your wallet/USDT address!');
                 return;
             }
-            alert('Withdrawal requested successfully! Tokens will be sent to your connected wallet.');
+            if (isNaN(amount) || amount < 0.001) {
+                alert('Minimum withdrawal amount is 0.001 JASMY!');
+                return;
+            }
+            if (amount > jasmyBalance) {
+                alert('Insufficient balance for withdrawal!');
+                return;
+            }
+
+            jasmyBalance -= amount;
+            document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8) + " JASMY";
+            document.getElementById('payoutHistoryText').innerText = `Requested: ${amount} JASMY to ${address.slice(0,6)}... (Pending Approval)`;
+            alert('Withdrawal request submitted successfully! It is now pending admin approval.');
         }
 
         function copyRefLink() {
@@ -284,4 +277,5 @@
         }
     </script>
 </body>
-</html>
+                    </html>
+    
