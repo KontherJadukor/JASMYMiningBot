@@ -215,17 +215,15 @@
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
         document.getElementById("refLink").value = `https://t.me/JASMYMiningBot?start=user_${userId}`;
 
-        // ট্যাব সুইচিং ফাংশন (যেটি ঠিক করা হয়েছে)
+        // ট্যাব সুইচিং ফাংশন
         function switchTab(tabId, event) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active-section');
             
-            // ইভেন্টের মাধ্যমে সঠিক নেভিগেশন আইটেম সিলেক্ট করা নিশ্চিত করা হয়েছে
-            let targetNav = event.currentTarget;
-            if (targetNav) {
-                targetNav.classList.add('active');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
             }
         }
 
@@ -308,4 +306,7 @@
             document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
             document.getElementById('jasmyUsdValue').innerText = `≈ $${(jasmyBalance * jasmyPriceInUsdt).toFixed(4)} USDT`;
             document.getElementById('mainBalanceBadge').innerText = mainBalanceUsdt.toFixed(2) + " USDT";
-            document.getElementById('payoutMainBalText').innerText = translations[currentLang].availableMainBal + ": " + mainBalanceUsdt.toFi
+            document.getElementById('payoutMainBalText').innerText = translations[currentLang].availableMainBal + ": " + mainBalanceUsdt.toFixed(2) + " USDT";
+            
+            document.getElementById('swapAmount').value = '';
+            alert(translations
