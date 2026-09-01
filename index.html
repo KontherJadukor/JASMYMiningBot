@@ -13,7 +13,6 @@
         .user-welcome span { font-size: 11px; color: #8b949e; }
         .user-welcome h3 { font-size: 15px; color: #58a6ff; }
         
-        /* Language Selector at Top Right */
         .lang-selector { background: #21262d; border: 1px solid #30363d; color: #fff; padding: 5px 8px; border-radius: 8px; font-size: 12px; cursor: pointer; outline: none; }
 
         .container { padding: 20px; text-align: center; }
@@ -48,7 +47,6 @@
             <span id="welcomeText">Welcome,</span>
             <h3 id="userNameDisplay">Miner 👋</h3>
         </div>
-        <!-- Language Selector Dropdown -->
         <div>
             <select id="langSelect" class="lang-selector" onchange="changeLanguage(this.value)">
                 <option value="en">English</option>
@@ -87,7 +85,7 @@
             </div>
         </div>
 
-        <!-- SHOP SECTION (BNB Smart Chain & Hidden Link to Admin ID) -->
+        <!-- SHOP SECTION -->
         <div id="shop" class="section">
             <h2 style="color: #58a6ff; margin-bottom: 5px;" id="shopTitle">⚡ Speed Boosters (Manual)</h2>
             <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;" id="shopDesc">Boost your speed by sending funds to the BNB Smart Chain address below.</p>
@@ -103,7 +101,6 @@
                     <div class="boost-title">⚡ Tier 1: $0.10</div>
                     <div style="font-size: 12px; color: #8b949e;" id="tier1Desc">Gets +5 JASMY Speed Bonus</div>
                 </div>
-                <!-- Hidden text representation of admin id, clicking opens Telegram link cleanly -->
                 <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn1">Submit Proof</a>
             </div>
             <div class="boost-card">
@@ -218,11 +215,18 @@
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
         document.getElementById("refLink").value = `https://t.me/JASMYMiningBot?start=user_${userId}`;
 
+        // ট্যাব সুইচিং ফাংশন (যেটি ঠিক করা হয়েছে)
         function switchTab(tabId, event) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            
             document.getElementById(tabId).classList.add('active-section');
-            event.currentTarget.classList.add('active');
+            
+            // ইভেন্টের মাধ্যমে সঠিক নেভিগেশন আইটেম সিলেক্ট করা নিশ্চিত করা হয়েছে
+            let targetNav = event.currentTarget;
+            if (targetNav) {
+                targetNav.classList.add('active');
+            }
         }
 
         let baseSpeed = 0.000000157546;
@@ -304,4 +308,4 @@
             document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
             document.getElementById('jasmyUsdValue').innerText = `≈ $${(jasmyBalance * jasmyPriceInUsdt).toFixed(4)} USDT`;
             document.getElementById('mainBalanceBadge').innerText = mainBalanceUsdt.toFixed(2) + " USDT";
-            document.getElementById('payoutMainBalText').innerText = translations[currentLang].availableMainBal + ": " + mainBalanceUsdt.toFixed(2) + "
+            document.getElementById('payoutMainBalText').innerText = translations[currentLang].availableMainBal + ": " + mainBalanceUsdt.toFi
