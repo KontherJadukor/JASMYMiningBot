@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JASMY Mining Bot</title>
-    <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- TonConnect SDK -->
     <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -30,7 +28,7 @@
         .boost-title { font-weight: bold; color: #facc15; font-size: 14px; }
         
         .ref-item { background: rgba(22, 27, 34, 0.9); padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; border: 1px solid #30363d; }
-        .status-pending { color: #f59e0b; font-weight: bold; }
+        .status-completed { color: #238636; font-weight: bold; }
 
         .nav { display: flex; justify-content: space-around; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(22, 27, 34, 0.95); backdrop-filter: blur(10px); padding: 10px 0; border-top: 1px solid #30363d; z-index: 1000; }
         .nav-item { font-size: 11px; color: #8b949e; cursor: pointer; text-align: center; }
@@ -51,74 +49,41 @@
         
         <!-- HOME SECTION -->
         <div id="home" class="section active-section">
-            <!-- Custom Connect Wallet Button -->
             <button class="btn wallet-btn" id="customConnectBtn" onclick="toggleWalletConnection()">🔗 Connect Wallet (Tonkeeper)</button>
             
             <div class="balance-box">
                 <p style="margin: 0; color: #8b949e;">Mined Balance</p>
                 <div class="balance" id="jasmyBalance">0.00 JASMY</div>
-                <p style="margin: 0; font-size: 13px; color: #8b949e;">Rate: 0.01 JASMY / hour</p>
+                <p style="margin: 0; font-size: 13px; color: #8b949e;" id="miningStatusText">Status: Tasks Required</p>
             </div>
 
-            <button class="btn" id="startMiningBtn" style="opacity: 0.6; background: #21262d; border: 1px solid #30363d;" disabled>🚀 START MINING (Complete Tasks First)</button>
+            <button class="btn" id="startMiningBtn" style="opacity: 0.6; background: #21262d; border: 1px solid #30363d;" disabled>🚀 START MINING</button>
 
             <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid #30363d;">
-                <h4 style="margin: 0 0 10px 0; color: #58a6ff;">Swap JASMY</h4>
-                <p style="font-size: 13px; color: #8b949e; margin: 0 0 15px 0;">Min. 215 JASMY (~$1) required to swap</p>
-                <button class="btn" style="background: #21262d; color: #8b949e; margin: 0; border: 1px solid #30363d;" disabled id="swapBtn">Swap to TON / USDT</button>
+                <h4 style="margin: 0 0 10px 0; color: #58a6ff;">Swap & Withdraw</h4>
+                <p style="font-size: 13px; color: #8b949e; margin: 0 0 15px 0;">Min. 215 JASMY (~$1) required</p>
+                <button class="btn" style="background: #238636; margin: 0;" id="withdrawBtn" onclick="requestWithdrawal()">Request Withdrawal</button>
             </div>
         </div>
 
         <!-- SHOP SECTION -->
         <div id="shop" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">⚡ Speed Boosters</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Boost your mining speed securely via TON Connect.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;">⚡ Speed Boosters (Unlimited Pass)</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Buy a booster to unlock unlimited mining without 24h task limits.</p>
             
             <div class="boost-card">
                 <div class="boost-info">
-                    <div class="boost-title">⚡ Tier 1 Booster</div>
-                    <div style="font-size: 12px; color: #8b949e;">+0.05 H/h Speed</div>
-                </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0;" onclick="buyBoost(0.50)">$0.50</button>
-            </div>
-
-            <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">⚡⚡ Tier 2 Booster</div>
-                    <div style="font-size: 12px; color: #8b949e;">+0.12 H/h Speed</div>
-                </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0;" onclick="buyBoost(1.00)">$1.00</button>
-            </div>
-
-            <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">⚡⚡⚡ Tier 3 Booster</div>
-                    <div style="font-size: 12px; color: #8b949e;">+0.30 H/h Speed</div>
+                    <div class="boost-title">⚡ Unlimited Booster Pass</div>
+                    <div style="font-size: 12px; color: #8b949e;">Bypasses 24h Task Requirement</div>
                 </div>
                 <button class="btn" style="width: auto; padding: 8px 15px; margin: 0;" onclick="buyBoost(2.00)">$2.00</button>
-            </div>
-
-            <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">⚡⚡⚡⚡ Tier 4 Booster</div>
-                    <div style="font-size: 12px; color: #8b949e;">+0.80 H/h Speed</div>
-                </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0;" onclick="buyBoost(5.00)">$5.00</button>
-            </div>
-
-            <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">⚡⚡⚡⚡⚡ Ultimate Pack</div>
-                    <div style="font-size: 12px; color: #8b949e;">+2.00 H/h Speed</div>
-                </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0;" onclick="buyBoost(10.00)">$10.00</button>
             </div>
         </div>
 
         <!-- TEAM SECTION -->
         <div id="team" class="section">
             <h2 style="color: #58a6ff; margin-bottom: 5px;">👥 Referral Team</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Invite friends and earn rewards.</p>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Invite friends and grow your network.</p>
             
             <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #30363d; text-align: left;">
                 <p style="font-size: 12px; color: #8b949e; margin: 0 0 5px 0;">Your Unique Referral Link:</p>
@@ -128,68 +93,51 @@
 
             <h3 style="text-align: left; font-size: 15px; color: #58a6ff; margin-bottom: 10px;">Your Referrals:</h3>
             <div id="refList">
-                <div class="ref-item">
-                    <span>Friend_Rahim</span>
-                    <span class="status-pending">Pending</span>
-                </div>
+                <!-- Dynamically loaded referred users only -->
             </div>
         </div>
 
-        <!-- EARN SECTION -->
+        <!-- EARN SECTION (Tasks 1 to 5) -->
         <div id="earn" class="section">
             <h2 style="color: #58a6ff; margin-bottom: 5px;">🎯 Daily Tasks (Mandatory)</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Complete all 5 tasks daily to unlock mining!</p>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Complete all 5 tasks to enable 24h mining (No token rewards).</p>
             
+            <!-- Task 1 -->
             <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">1. Join Telegram Channel</div>
-                    <div style="font-size: 12px; color: #8b949e;">Reward: +2 JASMY</div>
-                </div>
-                <button class="btn task-btn" id="task1" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task1', 'https://t.me/your_channel_link')">Start</button>
+                <div class="boost-info"><div class="boost-title">Task 1</div><div style="font-size: 12px; color: #8b949e;">Visit Link 1</div></div>
+                <button class="btn task-btn" id="task1" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task1', 'https://your-link-1.com')">Start</button>
             </div>
-
+            <!-- Task 2 -->
             <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">2. Follow on X (Twitter)</div>
-                    <div style="font-size: 12px; color: #8b949e;">Reward: +2 JASMY</div>
-                </div>
-                <button class="btn task-btn" id="task2" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task2', 'https://x.com/your_profile')">Start</button>
+                <div class="boost-info"><div class="boost-title">Task 2</div><div style="font-size: 12px; color: #8b949e;">Visit Link 2</div></div>
+                <button class="btn task-btn" id="task2" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task2', 'https://your-link-2.com')">Start</button>
             </div>
-
+            <!-- Task 3 -->
             <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">3. Visit Sponsor Website</div>
-                    <div style="font-size: 12px; color: #8b949e;">Reward: +2 JASMY</div>
-                </div>
-                <button class="btn task-btn" id="task3" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task3', 'https://your-sponsor-link.com')">Start</button>
+                <div class="boost-info"><div class="boost-title">Task 3</div><div style="font-size: 12px; color: #8b949e;">Visit Link 3</div></div>
+                <button class="btn task-btn" id="task3" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task3', 'https://your-link-3.com')">Start</button>
             </div>
-
+            <!-- Task 4 -->
             <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">4. Watch YouTube Video</div>
-                    <div style="font-size: 12px; color: #8b949e;">Reward: +2 JASMY</div>
-                </div>
-                <button class="btn task-btn" id="task4" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task4', 'https://youtube.com/your_video')">Start</button>
+                <div class="boost-info"><div class="boost-title">Task 4</div><div style="font-size: 12px; color: #8b949e;">Visit Link 4</div></div>
+                <button class="btn task-btn" id="task4" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task4', 'https://your-link-4.com')">Start</button>
             </div>
-
+            <!-- Task 5 -->
             <div class="boost-card">
-                <div class="boost-info">
-                    <div class="boost-title">5. Join Community Group</div>
-                    <div style="font-size: 12px; color: #8b949e;">Reward: +2 JASMY</div>
-                </div>
-                <button class="btn task-btn" id="task5" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task5', 'https://t.me/your_group_link')">Start</button>
+                <div class="boost-info"><div class="boost-title">Task 5</div><div style="font-size: 12px; color: #8b949e;">Visit Link 5</div></div>
+                <button class="btn task-btn" id="task5" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task5', 'https://your-link-5.com')">Start</button>
             </div>
         </div>
 
         <!-- PAYOUTS SECTION -->
         <div id="payouts" class="section">
             <h2 style="color: #58a6ff; margin-bottom: 5px;">💰 Payouts & Withdrawal</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Minimum withdrawal: 215 JASMY (~$1)</p>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Withdraw your mined JASMY securely.</p>
             
             <div class="balance-box" style="text-align: left;">
                 <p style="margin: 0; font-size: 13px; color: #8b949e;">Available to Withdraw:</p>
-                <h3 style="color: #38bdf8; margin: 5px 0 15px 0;">0.00 JASMY</h3>
-                <button class="btn" style="background: #21262d; color: #8b949e; border: 1px solid #30363d;" disabled id="withdrawBtn">Request Withdrawal</button>
+                <h3 style="color: #38bdf8; margin: 5px 0 15px 0;" id="withdrawableBalance">0.00 JASMY</h3>
+                <button class="btn" style="background: #238636;" onclick="requestWithdrawal()">Confirm Withdrawal</button>
             </div>
         </div>
 
@@ -207,7 +155,6 @@
     <script>
         const ADMIN_WALLET = "UQBiH2UGFUIiN4Hwf1nC4lcSifaIPFSETQFp1ScMilW73agn";
 
-        // Telegram WebApp Setup
         const tg = window.Telegram.WebApp;
         tg.expand();
         
@@ -220,11 +167,8 @@
         }
 
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
+        document.getElementById("refLink").value = `https://t.me/JASMYMiningBot?start=user_${userId}`;
 
-        const botUsername = "JASMYMiningBot"; 
-        document.getElementById("refLink").value = `https://t.me/${botUsername}?start=user_${userId}`;
-
-        // TonConnect Initialization
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://jasmy-mining-bot.vercel.app/tonconnect-manifest.json'
         });
@@ -232,12 +176,10 @@
         function switchTab(tabId, event) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active-section');
             event.currentTarget.classList.add('active');
         }
 
-        // Custom Wallet Connect & Disconnect Handler
         async function toggleWalletConnection() {
             try {
                 if (tonConnectUI.connected) {
@@ -246,9 +188,14 @@
                     await tonConnectUI.openModal();
                 }
             } catch (error) {
-                console.error("Wallet connection error:", error);
+                console.error("Wallet error:", error);
             }
         }
+
+        let isMiningActive = false;
+        let isUnlimited = false;
+        let completedTasksCount = 0;
+        const totalTasks = 5;
 
         tonConnectUI.onStatusChange(wallet => {
             const btn = document.getElementById('customConnectBtn');
@@ -257,34 +204,50 @@
 
             if (wallet) {
                 const address = wallet.account.address;
-                const shortAddr = address.slice(0, 4) + '...' + address.slice(-4);
-                btn.innerText = '✅ ' + shortAddr;
-                btn.style.background = '#1f6feb';
+                btn.innerText = '✅ ' + address.slice(0, 4) + '...' + address.slice(-4);
                 status.innerText = 'Connected';
                 status.style.color = '#3fb950';
-
-                if (completedTasksCount === totalTasks) {
-                    startMiningBtn.disabled = false;
-                    startMiningBtn.style.opacity = '1';
-                    startMiningBtn.style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
-                    startMiningBtn.innerText = '🚀 START MINING';
-                }
+                startMiningBtn.disabled = false;
+                startMiningBtn.style.opacity = '1';
+                startMiningBtn.style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
             } else {
                 btn.innerText = '🔗 Connect Wallet (Tonkeeper)';
-                btn.style.background = '#238636';
                 status.innerText = 'Not Connected';
                 status.style.color = '#8b949e';
-
-                startMiningBtn.disabled = true;
-                startMiningBtn.style.opacity = '0.6';
-                startMiningBtn.style.background = '#21262d';
-                startMiningBtn.innerText = '🚀 START MINING (Complete Tasks First)';
             }
         });
 
+        function handleTask(taskId, targetUrl) {
+            const btn = document.getElementById(taskId);
+            window.open(targetUrl, '_blank');
+            btn.disabled = true;
+            btn.style.background = '#334155';
+            
+            let timeLeft = 10;
+            btn.innerText = `Wait ${timeLeft}s...`;
+
+            let timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `Wait ${timeLeft}s...`;
+                } else {
+                    clearInterval(timer);
+                    btn.innerText = '✔ Done';
+                    btn.style.background = '#238636';
+                    completedTasksCount++;
+
+                    if (completedTasksCount === totalTasks) {
+                        isMiningActive = true;
+                        document.getElementById('miningStatusText').innerText = 'Status: Mining Active (24h)';
+                        alert('All tasks completed! 24-hour mining has started.');
+                    }
+                }
+            }, 1000);
+        }
+
         async function buyBoost(priceUSD) {
             if (!tonConnectUI.connected) {
-                alert('Please connect your Tonkeeper wallet first!');
+                alert('Please connect your wallet first!');
                 return;
             }
 
@@ -295,74 +258,22 @@
             };
 
             try {
-                alert('Opening Tonkeeper for $' + priceUSD + ' payment confirmation...');
                 await tonConnectUI.sendTransaction(transaction);
-                alert('Payment Successful! Your mining speed has been upgraded.');
+                isUnlimited = true;
+                document.getElementById('miningStatusText').innerText = 'Status: Unlimited Mining Pass Active 🚀';
+                alert('Booster purchased successfully! Your mining is now unlimited.');
             } catch (e) {
-                console.error(e);
                 alert('Payment cancelled or failed.');
             }
         }
 
-        let completedTasksCount = 0;
-        const totalTasks = 5;
-
-        function handleTask(taskId, targetUrl) {
-            const btn = document.getElementById(taskId);
-            
-            if (btn.dataset.state === "verify") {
-                btn.innerText = '✔ Done';
-                btn.style.background = '#30363d';
-                btn.style.color = '#8b949e';
-                btn.disabled = true;
-                btn.dataset.state = "done";
-                
-                completedTasksCount++;
-                alert('Task verified successfully! +2 JASMY added.');
-
-                if (completedTasksCount === totalTasks && tonConnectUI.connected) {
-                    alert('Congratulations! All daily tasks completed and wallet connected. Mining is now UNLOCKED!');
-                    const startBtn = document.getElementById('startMiningBtn');
-                    startBtn.disabled = false;
-                    startBtn.style.opacity = '1';
-                    startBtn.style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
-                    startBtn.innerText = '🚀 START MINING';
-                }
+        function requestWithdrawal() {
+            if (!tonConnectUI.connected) {
+                alert('Please connect your wallet to withdraw!');
                 return;
             }
-
-            window.open(targetUrl, '_blank');
-            btn.disabled = true;
-            btn.style.background = '#334155';
-            
-            let timeLeft = 15;
-            btn.innerText = `Wait ${timeLeft}s...`;
-
-            let timer = setInterval(() => {
-                timeLeft--;
-                if (timeLeft > 0) {
-                    btn.innerText = `Wait ${timeLeft}s...`;
-                } else {
-                    clearInterval(timer);
-                    btn.innerText = 'Verify';
-                    btn.style.background = '#eab308';
-                    btn.style.color = '#000';
-                    btn.disabled = false;
-                    btn.dataset.state = "verify";
-                }
-            }, 1000);
+            alert('Withdrawal requested successfully! Tokens will be sent to your connected wallet.');
         }
-
-        document.getElementById('startMiningBtn').addEventListener('click', function() {
-            if (completedTasksCount < totalTasks) {
-                alert('Mining is LOCKED! Please complete and verify all 5 daily tasks in the "Earn" section first.');
-                switchTab('earn', { currentTarget: document.querySelectorAll('.nav-item')[3] });
-            } else if (!tonConnectUI.connected) {
-                alert('Please connect your wallet first!');
-            } else {
-                alert('Mining started successfully! Generating 0.01 JASMY per hour.');
-            }
-        });
 
         function copyRefLink() {
             var copyText = document.getElementById("refLink");
@@ -372,5 +283,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
