@@ -13,10 +13,19 @@
         .user-welcome span { font-size: 11px; color: #8b949e; }
         .user-welcome h3 { font-size: 15px; color: #58a6ff; }
         
+        /* Language Selector at Top Right */
+        .lang-selector { background: #21262d; border: 1px solid #30363d; color: #fff; padding: 5px 8px; border-radius: 8px; font-size: 12px; cursor: pointer; outline: none; }
+
         .container { padding: 20px; text-align: center; }
-        .balance-box { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .balance { font-size: 32px; font-weight: bold; color: #38bdf8; margin: 10px 0; }
-        .btn { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); }
+        .balance-box { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; }
+        
+        .main-balance-badge { position: absolute; top: 15px; right: 15px; background: #21262d; border: 1px solid #30363d; padding: 5px 10px; border-radius: 10px; font-size: 11px; color: #3fb950; text-align: right; }
+        .main-balance-badge span { font-weight: bold; color: #fff; display: block; }
+
+        .balance { font-size: 32px; font-weight: bold; color: #38bdf8; margin: 10px 0 5px 0; }
+        .usd-value { font-size: 13px; color: #3fb950; margin-bottom: 10px; }
+        
+        .btn { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); text-decoration: none; display: inline-block; }
         
         .section { display: none; }
         .active-section { display: block; }
@@ -36,10 +45,18 @@
 
     <div class="header">
         <div class="user-welcome">
-            <span>Welcome,</span>
+            <span id="welcomeText">Welcome,</span>
             <h3 id="userNameDisplay">Miner 👋</h3>
         </div>
-        <span id="userStatus" style="font-size: 12px; color: #3fb950; background: #21262d; padding: 5px 10px; border-radius: 20px; border: 1px solid #30363d;">Active</span>
+        <!-- Language Selector Dropdown -->
+        <div>
+            <select id="langSelect" class="lang-selector" onchange="changeLanguage(this.value)">
+                <option value="en">English</option>
+                <option value="bn">বাংলা</option>
+                <option value="ru">Русский</option>
+                <option value="ur">اردو</option>
+            </select>
+        </div>
     </div>
 
     <div class="container">
@@ -47,115 +64,131 @@
         <!-- HOME SECTION -->
         <div id="home" class="section active-section">
             <div class="balance-box">
-                <p style="margin: 0; color: #8b949e;">Mined JASMY Balance</p>
+                <div class="main-balance-badge">
+                    <span id="mainBalLabel">Main Bal:</span> <span id="mainBalanceBadge">0.00 USDT</span>
+                </div>
+
+                <p style="margin: 0; color: #8b949e; text-align: left;" id="minedJasmyLabel">Mined JASMY Balance</p>
                 <div class="balance" id="jasmyBalance">0.00000000</div>
+                <div class="usd-value" id="jasmyUsdValue">≈ $0.00 USDT</div>
+
                 <p style="margin: 0; font-size: 13px; color: #8b949e;" id="miningStatusText">Status: Complete 5 Tasks to Start Mining</p>
                 <p style="margin-top: 5px; font-size: 11px; color: #38bdf8;" id="miningSpeedText">Speed: 0.000000157546 /s</p>
             </div>
 
             <button class="btn" id="startMiningBtn" style="opacity: 0.6; background: #21262d; border: 1px solid #30363d;" disabled>🚀 MINING PAUSED (Complete Tasks)</button>
 
+            <!-- SWAP SECTION -->
             <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid #30363d; text-align: left;">
-                <h4 style="margin: 0 0 10px 0; color: #58a6ff;">Withdrawal</h4>
-                <p style="font-size: 12px; color: #8b949e; margin-bottom: 8px;">Min. withdraw: 0.001 JASMY</p>
-                <input type="text" id="withdrawAddress" placeholder="Enter Wallet Address / USDT Address" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 8px; font-size: 12px; box-sizing: border-box;">
-                <input type="number" id="withdrawAmount" placeholder="Amount to Withdraw" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 10px; font-size: 12px; box-sizing: border-box;">
-                <button class="btn" style="background: #238636; margin: 0;" onclick="requestWithdrawal()">Request Withdrawal (Pending Approval)</button>
+                <h4 style="margin: 0 0 10px 0; color: #58a6ff;" id="swapTitle">🔄 Swap JASMY to USDT</h4>
+                <p style="font-size: 12px; color: #8b949e; margin-bottom: 8px;" id="swapDesc">Min. swap amount: Equivalent to $0.01 USDT</p>
+                <input type="number" id="swapAmount" placeholder="Enter JASMY amount to swap" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 10px; font-size: 12px; box-sizing: border-box;">
+                <button class="btn" style="background: #2563eb; margin: 0;" onclick="swapJasmyToUsdt()" id="swapBtnText">Swap to Main Balance (USDT)</button>
             </div>
         </div>
 
-        <!-- SHOP SECTION (Manual Boosters) -->
+        <!-- SHOP SECTION (BNB Smart Chain & Hidden Link to Admin ID) -->
         <div id="shop" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">⚡ Speed Boosters (Manual)</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Boost your mining speed instantly by manual payment to admin.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;" id="shopTitle">⚡ Speed Boosters (Manual)</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;" id="shopDesc">Boost your speed by sending funds to the BNB Smart Chain address below.</p>
             
             <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #30363d; text-align: left;">
-                <p style="font-size: 12px; color: #facc15; margin-bottom: 5px;"><b>Admin Wallet (Send USDT/TON):</b></p>
-                <input type="text" value="UQBiH2UGFUIiN4Hwf1nC4lcSifaIPFSETQFp1ScMilW73agn" readonly style="width: 100%; padding: 8px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; border-radius: 6px; font-size: 11px; text-align: center;">
+                <p style="font-size: 12px; color: #facc15; margin-bottom: 5px;"><b id="bnbWalletLabel">BNB Smart Chain (BEP20) Address:</b></p>
+                <input type="text" value="0x71C...3B9218a5C2b40561e1234567890abcdef" readonly style="width: 100%; padding: 8px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; border-radius: 6px; font-size: 11px; text-align: center;">
+                <p style="font-size: 11px; color: #3fb950; margin-top: 8px; text-align: center;" id="autoPaymentNotice">⚠️ Auto-payment feature is under development. Please submit proof manually.</p>
             </div>
 
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 1: $0.10</div>
-                    <div style="font-size: 12px; color: #8b949e;">Gets +5 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;" id="tier1Desc">Gets +5 JASMY Speed Bonus</div>
                 </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(0.10, 5)">Buy</button>
+                <!-- Hidden text representation of admin id, clicking opens Telegram link cleanly -->
+                <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn1">Submit Proof</a>
             </div>
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 2: $0.50</div>
-                    <div style="font-size: 12px; color: #8b949e;">Gets +50 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;" id="tier2Desc">Gets +50 JASMY Speed Bonus</div>
                 </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(0.50, 50)">Buy</button>
+                <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn2">Submit Proof</a>
             </div>
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 3: $1.00</div>
-                    <div style="font-size: 12px; color: #8b949e;">Gets +100 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;" id="tier3Desc">Gets +100 JASMY Speed Bonus</div>
                 </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(1.00, 100)">Buy</button>
+                <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn3">Submit Proof</a>
             </div>
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 4: $5.00</div>
-                    <div style="font-size: 12px; color: #8b949e;">Gets +500 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;" id="tier4Desc">Gets +500 JASMY Speed Bonus</div>
                 </div>
-                <button class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="manualBuy(5.00, 500)">Buy</button>
+                <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn4">Submit Proof</a>
             </div>
         </div>
 
         <!-- TEAM SECTION -->
         <div id="team" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">👥 Referral Team</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Invite more friends to increase your mining speed! Each active referral adds +0.0005 speed.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;" id="teamTitle">👥 Referral Team</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;" id="teamDesc">Invite more friends to increase your speed! Each active referral adds +0.0005 speed.</p>
             
             <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #30363d; text-align: left;">
-                <p style="font-size: 12px; color: #8b949e; margin: 0 0 5px 0;">Share your link and earn more speed:</p>
+                <p style="font-size: 12px; color: #8b949e; margin: 0 0 5px 0;" id="refShareText">Share your link and earn more speed:</p>
                 <input type="text" id="refLink" readonly style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; border-radius: 6px; box-sizing: border-box; text-align: center; font-size: 12px;">
-                <button class="btn" style="padding: 10px; font-size: 14px; margin-top: 10px;" onclick="copyRefLink()">📋 Copy Link</button>
+                <button class="btn" style="padding: 10px; font-size: 14px; margin-top: 10px;" onclick="copyRefLink()" id="copyLinkBtn">📋 Copy Link</button>
             </div>
 
-            <h3 style="text-align: left; font-size: 15px; color: #58a6ff; margin-bottom: 10px;">Your Active Referrals:</h3>
+            <h3 style="text-align: left; font-size: 15px; color: #58a6ff; margin-bottom: 10px;" id="activeRefTitle">Your Active Referrals:</h3>
             <div id="refList">
-                <div class="ref-item"><span>Friend_Rahim (Task Completed)</span><span style="color: #3fb950;">Active (+0.0005)</span></div>
+                <div class="ref-item"><span>Friend_Rahim (Task Completed)</span><span style="color: #3fb950;" id="activeTag">Active (+0.0005)</span></div>
             </div>
         </div>
 
-        <!-- EARN SECTION (Tasks 1 to 5) -->
+        <!-- EARN SECTION -->
         <div id="earn" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">🎯 Daily Tasks</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Complete Task 1 to 5 to keep 24-hour mining active.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;" id="earnTitle">🎯 Daily Tasks</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;" id="earnDesc">Complete Task 1 to 5 to keep 24-hour mining active.</p>
             
             <div class="boost-card">
-                <div class="boost-info"><div class="boost-title">Task 1</div><div style="font-size: 12px; color: #8b949e;">Visit Link 1</div></div>
+                <div class="boost-info"><div class="boost-title" id="t1Title">Task 1</div><div style="font-size: 12px; color: #8b949e;" id="t1Desc">Visit Link 1</div></div>
                 <button class="btn task-btn" id="task1" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task1', 'https://your-link-1.com')">Start</button>
             </div>
             <div class="boost-card">
-                <div class="boost-info"><div class="boost-title">Task 2</div><div style="font-size: 12px; color: #8b949e;">Visit Link 2</div></div>
+                <div class="boost-info"><div class="boost-title" id="t2Title">Task 2</div><div style="font-size: 12px; color: #8b949e;" id="t2Desc">Visit Link 2</div></div>
                 <button class="btn task-btn" id="task2" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task2', 'https://your-link-2.com')">Start</button>
             </div>
             <div class="boost-card">
-                <div class="boost-info"><div class="boost-title">Task 3</div><div style="font-size: 12px; color: #8b949e;">Visit Link 3</div></div>
+                <div class="boost-info"><div class="boost-title" id="t3Title">Task 3</div><div style="font-size: 12px; color: #8b949e;" id="t3Desc">Visit Link 3</div></div>
                 <button class="btn task-btn" id="task3" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task3', 'https://your-link-3.com')">Start</button>
             </div>
             <div class="boost-card">
-                <div class="boost-info"><div class="boost-title">Task 4</div><div style="font-size: 12px; color: #8b949e;">Visit Link 4</div></div>
+                <div class="boost-info"><div class="boost-title" id="t4Title">Task 4</div><div style="font-size: 12px; color: #8b949e;" id="t4Desc">Visit Link 4</div></div>
                 <button class="btn task-btn" id="task4" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task4', 'https://your-link-4.com')">Start</button>
             </div>
             <div class="boost-card">
-                <div class="boost-info"><div class="boost-title">Task 5</div><div style="font-size: 12px; color: #8b949e;">Visit Link 5</div></div>
+                <div class="boost-info"><div class="boost-title" id="t5Title">Task 5</div><div style="font-size: 12px; color: #8b949e;" id="t5Desc">Visit Link 5</div></div>
                 <button class="btn task-btn" id="task5" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task5', 'https://your-link-5.com')">Start</button>
             </div>
         </div>
 
         <!-- PAYOUTS SECTION -->
         <div id="payouts" class="section">
-            <h2 style="color: #58a6ff; margin-bottom: 5px;">💰 Payouts & History</h2>
-            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Track your withdrawal request status.</p>
+            <h2 style="color: #58a6ff; margin-bottom: 5px;" id="payoutsTitle">💰 Payouts & Withdrawal</h2>
+            <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;" id="payoutsDesc">Request withdrawal from your Main Balance (USDT).</p>
             
+            <div style="background: rgba(22, 27, 34, 0.9); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #30363d; text-align: left;">
+                <h4 style="margin: 0 0 5px 0; color: #58a6ff;" id="reqWithTitle">Request Withdrawal</h4>
+                <p style="font-size: 12px; color: #3fb950; margin-bottom: 10px;" id="payoutMainBalText">Available Main Balance: 0.00 USDT</p>
+                <input type="text" id="withdrawAddress" placeholder="Enter USDT Wallet Address" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 8px; font-size: 12px; box-sizing: border-box;">
+                <input type="number" id="withdrawAmount" placeholder="Amount in USDT to Withdraw" style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #fff; border-radius: 6px; margin-bottom: 10px; font-size: 12px; box-sizing: border-box;">
+                <button class="btn" style="background: #238636; margin: 0;" onclick="requestWithdrawal()" id="reqWithBtn">Request Withdrawal (Pending Approval)</button>
+            </div>
+
             <div class="balance-box" style="text-align: left;">
-                <p style="margin: 0; font-size: 13px; color: #8b949e;">Status: <span style="color: #facc15;">Pending Admin Approval</span></p>
-                <h3 style="color: #38bdf8; margin: 5px 0 0 0;" id="payoutHistoryText">No withdrawals yet</h3>
+                <p style="margin: 0; font-size: 13px; color: #8b949e;" id="historyLabel">Withdrawal History:</p>
+                <h3 style="color: #38bdf8; margin: 5px 0 0 0; font-size: 14px;" id="payoutHistoryText">No withdrawals yet</h3>
             </div>
         </div>
 
@@ -163,11 +196,11 @@
 
     <!-- BOTTOM NAVIGATION -->
     <div class="nav">
-        <div class="nav-item active" onclick="switchTab('home', event)">🏠<br>Home</div>
-        <div class="nav-item" onclick="switchTab('shop', event)">🛒<br>Shop</div>
-        <div class="nav-item" onclick="switchTab('team', event)">👥<br>Team</div>
-        <div class="nav-item" onclick="switchTab('earn', event)">🎯<br>Earn</div>
-        <div class="nav-item" onclick="switchTab('payouts', event)">💰<br>Payouts</div>
+        <div class="nav-item active" onclick="switchTab('home', event)" id="navHome">🏠<br>Home</div>
+        <div class="nav-item" onclick="switchTab('shop', event)" id="navShop">🛒<br>Shop</div>
+        <div class="nav-item" onclick="switchTab('team', event)" id="navTeam">👥<br>Team</div>
+        <div class="nav-item" onclick="switchTab('earn', event)" id="navEarn">🎯<br>Earn</div>
+        <div class="nav-item" onclick="switchTab('payouts', event)" id="navPayouts">💰<br>Payouts</div>
     </div>
 
     <script>
@@ -193,11 +226,15 @@
         }
 
         let baseSpeed = 0.000000157546;
-        let referralCount = 1; // ধরে নিলাম ১টিভ রেফার আছে
+        let referralCount = 1; 
         let referralBonusSpeed = referralCount * 0.0005;
         let totalSpeed = baseSpeed + referralBonusSpeed;
 
         let jasmyBalance = 0.0;
+        let mainBalanceUsdt = 0.0;
+        const jasmyPriceInUsdt = 0.005; 
+        const minSwapUsdt = 0.01;
+
         let isMiningActive = false;
         let completedTasksCount = 0;
         const totalTasks = 5;
@@ -219,63 +256,52 @@
                     btn.innerText = `Wait ${timeLeft}s...`;
                 } else {
                     clearInterval(timer);
-                    btn.innerText = '✔ Done';
+                    btn.innerText = translations[currentLang].doneText || '✔ Done';
                     btn.style.background = '#238636';
                     completedTasksCount++;
 
                     if (completedTasksCount === totalTasks) {
                         isMiningActive = true;
-                        document.getElementById('miningStatusText').innerText = 'Status: Mining Active (24 Hours)';
-                        document.getElementById('startMiningBtn').innerText = '🚀 MINING RUNNING...';
+                        document.getElementById('miningStatusText').innerText = translations[currentLang].miningActiveText;
+                        document.getElementById('startMiningBtn').innerText = translations[currentLang].miningRunningBtn;
                         document.getElementById('startMiningBtn').style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
-                        alert('All 5 tasks completed! 24-hour mining has started.');
+                        alert(translations[currentLang].taskCompleteAlert);
                     }
                 }
             }, 1000);
         }
 
-        // প্রতি সেকেন্ডে মাইনিং ব্যালেন্স আপডেট লজিক
         setInterval(() => {
             if (isMiningActive) {
                 jasmyBalance += totalSpeed;
-                document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8) + " JASMY";
+                let currentUsdValue = jasmyBalance * jasmyPriceInUsdt;
+
+                document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
+                document.getElementById('jasmyUsdValue').innerText = `≈ $${currentUsdValue.toFixed(4)} USDT`;
             }
         }, 1000);
 
-        function manualBuy(price, bonusJasmy) {
-            alert(`You selected the $${price} package. Please send $${price} worth of USDT/TON to the admin wallet. After payment, send your TxID to the admin to receive +${bonusJasmy} JASMY bonus!`);
-        }
+        function swapJasmyToUsdt() {
+            const amount = parseFloat(document.getElementById('swapAmount').value);
+            let equivalentUsdt = amount * jasmyPriceInUsdt;
 
-        function requestWithdrawal() {
-            const address = document.getElementById('withdrawAddress').value;
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-
-            if (!address) {
-                alert('Please enter your wallet/USDT address!');
+            if (isNaN(amount) || amount <= 0) {
+                alert(translations[currentLang].errValidJasmy);
                 return;
             }
-            if (isNaN(amount) || amount < 0.001) {
-                alert('Minimum withdrawal amount is 0.001 JASMY!');
+            if (equivalentUsdt < minSwapUsdt) {
+                alert(translations[currentLang].errMinSwap + ` $${minSwapUsdt} USDT!`);
                 return;
             }
             if (amount > jasmyBalance) {
-                alert('Insufficient balance for withdrawal!');
+                alert(translations[currentLang].errInsufficientJasmy);
                 return;
             }
 
             jasmyBalance -= amount;
-            document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8) + " JASMY";
-            document.getElementById('payoutHistoryText').innerText = `Requested: ${amount} JASMY to ${address.slice(0,6)}... (Pending Approval)`;
-            alert('Withdrawal request submitted successfully! It is now pending admin approval.');
-        }
+            mainBalanceUsdt += equivalentUsdt;
 
-        function copyRefLink() {
-            var copyText = document.getElementById("refLink");
-            copyText.select();
-            navigator.clipboard.writeText(copyText.value);
-            alert("Referral link copied to clipboard!");
-        }
-    </script>
-</body>
-                    </html>
-    
+            document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
+            document.getElementById('jasmyUsdValue').innerText = `≈ $${(jasmyBalance * jasmyPriceInUsdt).toFixed(4)} USDT`;
+            document.getElementById('mainBalanceBadge').innerText = mainBalanceUsdt.toFixed(2) + " USDT";
+            document.getElementById('payoutMainBalText').innerText = translations[currentLang].availableMainBal + ": " + mainBalanceUsdt.toFixed(2) + "
