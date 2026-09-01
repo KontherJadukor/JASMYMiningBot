@@ -6,13 +6,12 @@
     <title>JASMY Mining Bot</title>
     <!-- Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- TonConnect SDK for direct wallet payments -->
+    <!-- TonConnect SDK -->
     <script src="https://unpkg.com/@tonconnect/sdk@latest/dist/tonconnect-sdk.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); color: #fff; padding-bottom: 80px; height: 100vh; overflow-y: auto; }
         
-        /* Header with User Greeting */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(22, 27, 34, 0.9); border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 1000; }
         .user-welcome span { font-size: 11px; color: #8b949e; }
         .user-welcome h3 { font-size: 15px; color: #58a6ff; }
@@ -21,22 +20,18 @@
         .balance-box { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .balance { font-size: 32px; font-weight: bold; color: #38bdf8; margin: 10px 0; }
         .btn { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); }
-        .wallet-btn { background: #238636; box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4); margin-bottom: 15px; width: auto; padding: 8px 16px; font-size: 13px; border-radius: 20px; }
+        .wallet-btn { background: #238636; box-shadow: 0 4px 12px rgba(35, 134, 54, 0.4); margin-bottom: 15px; }
         
-        /* Sections */
         .section { display: none; }
         .active-section { display: block; }
         
-        /* Boost Cards */
         .boost-card { background: rgba(22, 27, 34, 0.9); border: 1px solid #30363d; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .boost-info { text-align: left; }
         .boost-title { font-weight: bold; color: #facc15; font-size: 14px; }
         
-        /* Referral List */
         .ref-item { background: rgba(22, 27, 34, 0.9); padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; border: 1px solid #30363d; }
         .status-pending { color: #f59e0b; font-weight: bold; }
 
-        /* Bottom Nav */
         .nav { display: flex; justify-content: space-around; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(22, 27, 34, 0.95); backdrop-filter: blur(10px); padding: 10px 0; border-top: 1px solid #30363d; z-index: 1000; }
         .nav-item { font-size: 11px; color: #8b949e; cursor: pointer; text-align: center; }
         .nav-item.active { color: #58a6ff; }
@@ -49,13 +44,16 @@
             <span>Welcome,</span>
             <h3 id="userNameDisplay">Miner 👋</h3>
         </div>
-        <div id="connectWalletBtn"></div>
+        <span id="userStatus" style="font-size: 12px; color: #8b949e; background: #21262d; padding: 5px 10px; border-radius: 20px; border: 1px solid #30363d;">Not Connected</span>
     </div>
 
     <div class="container">
         
         <!-- HOME SECTION -->
         <div id="home" class="section active-section">
+            <!-- Custom Connect Wallet Button -->
+            <button class="btn wallet-btn" id="customConnectBtn" onclick="toggleWalletConnection()">🔗 Connect Wallet (Tonkeeper)</button>
+            
             <div class="balance-box">
                 <p style="margin: 0; color: #8b949e;">Mined Balance</p>
                 <div class="balance" id="jasmyBalance">0.00 JASMY</div>
@@ -137,7 +135,7 @@
             </div>
         </div>
 
-        <!-- EARN SECTION (5 Tasks with Timer) -->
+        <!-- EARN SECTION -->
         <div id="earn" class="section">
             <h2 style="color: #58a6ff; margin-bottom: 5px;">🎯 Daily Tasks (Mandatory)</h2>
             <p style="font-size: 13px; color: #8b949e; margin-bottom: 15px;">Complete all 5 tasks daily to unlock mining!</p>
@@ -221,18 +219,14 @@
             userName = tg.initDataUnsafe.user.first_name || "Miner";
         }
 
-        // Display User Name in Header
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
 
-        // Set Dynamic Referral Link
         const botUsername = "JASMYMiningBot"; 
-        const refLinkValue = `https://t.me/${botUsername}?start=user_${userId}`;
-        document.getElementById("refLink").value = refLinkValue;
+        document.getElementById("refLink").value = `https://t.me/${botUsername}?start=user_${userId}`;
 
-        // TonConnect Setup with correct manifest URL
+        // TonConnect Initialization
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://jasmy-mining-bot.vercel.app/tonconnect-manifest.json',
-            buttonRootId: 'connectWalletBtn'
+            manifestUrl: 'https://jasmy-mining-bot.vercel.app/tonconnect-manifest.json'
         });
 
         function switchTab(tabId, event) {
@@ -243,9 +237,32 @@
             event.currentTarget.classList.add('active');
         }
 
+        // Custom Wallet Connect & Disconnect Handler
+        async function toggleWalletConnection() {
+            try {
+                if (tonConnectUI.connected) {
+                    await tonConnectUI.disconnect();
+                } else {
+                    await tonConnectUI.openModal();
+                }
+            } catch (error) {
+                console.error("Wallet connection error:", error);
+            }
+        }
+
         tonConnectUI.onStatusChange(wallet => {
+            const btn = document.getElementById('customConnectBtn');
+            const status = document.getElementById('userStatus');
             const startMiningBtn = document.getElementById('startMiningBtn');
+
             if (wallet) {
+                const address = wallet.account.address;
+                const shortAddr = address.slice(0, 4) + '...' + address.slice(-4);
+                btn.innerText = '✅ ' + shortAddr;
+                btn.style.background = '#1f6feb';
+                status.innerText = 'Connected';
+                status.style.color = '#3fb950';
+
                 if (completedTasksCount === totalTasks) {
                     startMiningBtn.disabled = false;
                     startMiningBtn.style.opacity = '1';
@@ -253,6 +270,11 @@
                     startMiningBtn.innerText = '🚀 START MINING';
                 }
             } else {
+                btn.innerText = '🔗 Connect Wallet (Tonkeeper)';
+                btn.style.background = '#238636';
+                status.innerText = 'Not Connected';
+                status.style.color = '#8b949e';
+
                 startMiningBtn.disabled = true;
                 startMiningBtn.style.opacity = '0.6';
                 startMiningBtn.style.background = '#21262d';
@@ -262,7 +284,7 @@
 
         async function buyBoost(priceUSD) {
             if (!tonConnectUI.connected) {
-                alert('Please connect your Tonkeeper wallet first from the top right corner!');
+                alert('Please connect your Tonkeeper wallet first!');
                 return;
             }
 
@@ -282,7 +304,6 @@
             }
         }
 
-        // Task States & Logic
         let completedTasksCount = 0;
         const totalTasks = 5;
 
