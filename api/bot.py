@@ -6,7 +6,7 @@ from pymongo import MongoClient
 
 # Vercel Environment Variables থেকে টোকেন এবং ডাটাবেজ লিংক নেওয়া হবে
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-WEB_APP_URL = "https://KontherJadukor.github.io/JASMYMiningBot/"
+WEB_APP_URL = "https://jasmy-mining-bot.vercel.app/"
 TELEGRAM_API = f"https://api.telegram.org/bot{TOKEN}"
 
 MONGO_URI = os.environ.get("MONGODB_URI", "")
@@ -73,3 +73,4 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps({"status": "ok"}).encode('utf-8'))
         return
+        
