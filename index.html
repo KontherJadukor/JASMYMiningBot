@@ -205,10 +205,13 @@
         let userId = "12345";
         let userName = "User";
 
-        // টেলিগ্রাম থেকে ইউজারের রিয়েল ডাটা ফেচ করার কোড
+        // টেলিগ্রাম থেকে ইউজারের রিয়েল ডাটা ফেচ করার সুনির্দিষ্ট কোড
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             userId = tg.initDataUnsafe.user.id;
             userName = tg.initDataUnsafe.user.first_name || "User";
+            if (tg.initDataUnsafe.user.last_name) {
+                userName += " " + tg.initDataUnsafe.user.last_name;
+            }
         }
 
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
@@ -278,7 +281,7 @@
                 autoNotice: "⚠️ অটো-পেমেন্ট ফিচারটি তৈরি করা হচ্ছে। অনুগ্রহ করে ম্যানুয়ালি প্রমাণ জমা দিন।",
                 submitProof: "প্রমাণ জমা দিন",
                 teamTitle: "👥 রেফারেল টিম",
-                teamDesc: "স্পিড বাড়াতে আরও বন্ধুদের আমন্ত্রণ জানান! প্রতি সক্রিয় রেফারালে যোগ হয় +০.০০০৫ স্পিড।",
+                teamDesc: "স্পিড বাড়াতে আরও বন্ধুদের আমন্ত্রণ জানান! প্রতি সক্রিয় রেফারালে যোগ হয় যোগ হয় +০.০০০৫ স্পিড।",
                 refShare: "আপনার লিংক শেয়ার করুন এবং বেশি স্পিড অর্জন করুন:",
                 copyLink: "📋 লিংক কপি করুন",
                 activeRef: "আপনার সক্রিয় রেফারেলসমূহ:",
