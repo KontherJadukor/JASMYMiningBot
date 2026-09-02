@@ -150,23 +150,23 @@
             
             <div class="boost-card">
                 <div class="boost-info"><div class="boost-title" id="t1Title">Task 1</div><div style="font-size: 12px; color: #8b949e;" id="t1Desc">Visit Link 1</div></div>
-                <button class="btn task-btn" id="task1" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task1', 'https://your-link-1.com')">Start</button>
+                <button class="btn task-btn" id="task1" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task1', 'https://google.com')">Start</button>
             </div>
             <div class="boost-card">
                 <div class="boost-info"><div class="boost-title" id="t2Title">Task 2</div><div style="font-size: 12px; color: #8b949e;" id="t2Desc">Visit Link 2</div></div>
-                <button class="btn task-btn" id="task2" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task2', 'https://your-link-2.com')">Start</button>
+                <button class="btn task-btn" id="task2" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task2', 'https://google.com')">Start</button>
             </div>
             <div class="boost-card">
                 <div class="boost-info"><div class="boost-title" id="t3Title">Task 3</div><div style="font-size: 12px; color: #8b949e;" id="t3Desc">Visit Link 3</div></div>
-                <button class="btn task-btn" id="task3" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task3', 'https://your-link-3.com')">Start</button>
+                <button class="btn task-btn" id="task3" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task3', 'https://google.com')">Start</button>
             </div>
             <div class="boost-card">
                 <div class="boost-info"><div class="boost-title" id="t4Title">Task 4</div><div style="font-size: 12px; color: #8b949e;" id="t4Desc">Visit Link 4</div></div>
-                <button class="btn task-btn" id="task4" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task4', 'https://your-link-4.com')">Start</button>
+                <button class="btn task-btn" id="task4" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task4', 'https://google.com')">Start</button>
             </div>
             <div class="boost-card">
                 <div class="boost-info"><div class="boost-title" id="t5Title">Task 5</div><div style="font-size: 12px; color: #8b949e;" id="t5Desc">Visit Link 5</div></div>
-                <button class="btn task-btn" id="task5" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task5', 'https://your-link-5.com')">Start</button>
+                <button class="btn task-btn" id="task5" style="width: auto; padding: 8px 15px; margin: 0; background: #238636;" onclick="handleTask('task5', 'https://google.com')">Start</button>
             </div>
         </div>
 
@@ -215,98 +215,70 @@
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
         document.getElementById("refLink").value = `https://t.me/JASMYMiningBot?start=user_${userId}`;
 
-        // ট্যাব সুইচিং ফাংশন
-        function switchTab(tabId, event) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active-section');
-            
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
-            }
-        }
-
-        let baseSpeed = 0.000000157546;
-        let referralCount = 1; 
-        let referralBonusSpeed = referralCount * 0.0005;
-        let totalSpeed = baseSpeed + referralBonusSpeed;
-
-        let jasmyBalance = 0.0;
-        let mainBalanceUsdt = 0.0;
-        const jasmyPriceInUsdt = 0.005; 
-        const minSwapUsdt = 0.01;
-
-        let isMiningActive = false;
-        let completedTasksCount = 0;
-        const totalTasks = 5;
-
-        document.getElementById('miningSpeedText').innerText = `Speed: ${totalSpeed.toFixed(8)} /s`;
-
-        function handleTask(taskId, targetUrl) {
-            const btn = document.getElementById(taskId);
-            window.open(targetUrl, '_blank');
-            btn.disabled = true;
-            btn.style.background = '#334155';
-            
-            let timeLeft = 5;
-            btn.innerText = `Wait ${timeLeft}s...`;
-
-            let timer = setInterval(() => {
-                timeLeft--;
-                if (timeLeft > 0) {
-                    btn.innerText = `Wait ${timeLeft}s...`;
-                } else {
-                    clearInterval(timer);
-                    btn.innerText = translations[currentLang].doneText || '✔ Done';
-                    btn.style.background = '#238636';
-                    completedTasksCount++;
-
-                    if (completedTasksCount === totalTasks) {
-                        isMiningActive = true;
-                        document.getElementById('miningStatusText').innerText = translations[currentLang].miningActiveText;
-                        document.getElementById('startMiningBtn').innerText = translations[currentLang].miningRunningBtn;
-                        document.getElementById('startMiningBtn').style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
-                        alert(translations[currentLang].taskCompleteAlert);
-                    }
-                }
-            }, 1000);
-        }
-
-        setInterval(() => {
-            if (isMiningActive) {
-                jasmyBalance += totalSpeed;
-                let currentUsdValue = jasmyBalance * jasmyPriceInUsdt;
-
-                document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
-                document.getElementById('jasmyUsdValue').innerText = `≈ $${currentUsdValue.toFixed(4)} USDT`;
-            }
-        }, 1000);
-
-        function swapJasmyToUsdt() {
-            const amount = parseFloat(document.getElementById('swapAmount').value);
-            let equivalentUsdt = amount * jasmyPriceInUsdt;
-
-            if (isNaN(amount) || amount <= 0) {
-                alert(translations[currentLang].errValidJasmy);
-                return;
-            }
-            if (equivalentUsdt < minSwapUsdt) {
-                alert(translations[currentLang].errMinSwap + ` $${minSwapUsdt} USDT!`);
-                return;
-            }
-            if (amount > jasmyBalance) {
-                alert(translations[currentLang].errInsufficientJasmy);
-                return;
-            }
-
-            jasmyBalance -= amount;
-            mainBalanceUsdt += equivalentUsdt;
-
-            document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
-            document.getElementById('jasmyUsdValue').innerText = `≈ $${(jasmyBalance * jasmyPriceInUsdt).toFixed(4)} USDT`;
-            document.getElementById('mainBalanceBadge').innerText = mainBalanceUsdt.toFixed(2) + " USDT";
-            document.getElementById('payoutMainBalText').innerText = translations[currentLang].availableMainBal + ": " + mainBalanceUsdt.toFixed(2) + " USDT";
-            
-            document.getElementById('swapAmount').value = '';
-            alert(translations
+        // ভাষা ট্রান্সলেশন অবজেক্ট
+        let currentLang = 'en';
+        const translations = {
+            en: {
+                welcome: "Welcome,",
+                mainBal: "Main Bal:",
+                minedJasmy: "Mined JASMY Balance",
+                miningStatus: "Status: Complete 5 Tasks to Start Mining",
+                miningPausedBtn: "🚀 MINING PAUSED (Complete Tasks)",
+                swapTitle: "🔄 Swap JASMY to USDT",
+                swapDesc: "Min. swap amount: Equivalent to $0.01 USDT",
+                swapPlaceholder: "Enter JASMY amount to swap",
+                swapBtn: "Swap to Main Balance (USDT)",
+                shopTitle: "⚡ Speed Boosters (Manual)",
+                shopDesc: "Boost your speed by sending funds to the BNB Smart Chain address below.",
+                bnbWallet: "BNB Smart Chain (BEP20) Address:",
+                autoNotice: "⚠️ Auto-payment feature is under development. Please submit proof manually.",
+                submitProof: "Submit Proof",
+                teamTitle: "👥 Referral Team",
+                teamDesc: "Invite more friends to increase your speed! Each active referral adds +0.0005 speed.",
+                refShare: "Share your link and earn more speed:",
+                copyLink: "📋 Copy Link",
+                activeRef: "Your Active Referrals:",
+                activeTag: "Active (+0.0005)",
+                earnTitle: "🎯 Daily Tasks",
+                earnDesc: "Complete Task 1 to 5 to keep 24-hour mining active.",
+                payoutsTitle: "💰 Payouts & Withdrawal",
+                payoutsDesc: "Request withdrawal from your Main Balance (USDT).",
+                reqWithTitle: "Request Withdrawal",
+                availMainBal: "Available Main Balance",
+                addrPlaceholder: "Enter USDT Wallet Address",
+                amtPlaceholder: "Amount in USDT to Withdraw",
+                reqWithBtn: "Request Withdrawal (Pending Approval)",
+                historyLabel: "Withdrawal History:",
+                noHistory: "No withdrawals yet",
+                doneText: "✔ Done",
+                miningActiveText: "Status: Mining Active (24 Hours)",
+                miningRunningBtn: "🚀 MINING RUNNING...",
+                taskCompleteAlert: "All 5 tasks completed! 24-hour mining has started.",
+                errValidJasmy: "Please enter a valid JASMY amount to swap!",
+                errMinSwap: "Minimum swap amount must be equivalent to",
+                errInsufficientJasmy: "Insufficient JASMY balance for swapping!",
+                successSwap: "Successfully swapped",
+                enterAddr: "Please enter your USDT wallet address!",
+                validWithdraw: "Please enter a valid withdrawal amount in USDT!",
+                insufficientBal: "Insufficient Main Balance for withdrawal!",
+                reqSuccess: "Withdrawal request submitted successfully from Main Balance! It is now pending admin approval.",
+                copyAlert: "Referral link copied to clipboard!"
+            },
+            bn: {
+                welcome: "স্বাগতম,",
+                mainBal: "মেইন ব্যালেন্স:",
+                minedJasmy: "মাইন করা JASMY ব্যালেন্স",
+                miningStatus: "স্ট্যাটাস: মাইনিং শুরু করতে ৫টি টাস্ক সম্পূর্ণ করুন",
+                miningPausedBtn: "🚀 মাইনিং বন্ধ আছে (টাস্ক সম্পূর্ণ করুন)",
+                swapTitle: "🔄 JASMY থেকে USDT সোয়াপ",
+                swapDesc: "সর্বনিম্ন সোয়াপ: $0.01 USDT এর সমপরিমাণ",
+                swapPlaceholder: "সোয়াপ করার জন্য JASMY পরিমাণ দিন",
+                swapBtn: "মেইন ব্যালেন্সে সোয়াপ করুন (USDT)",
+                shopTitle: "⚡ স্পিড বুস্টার (ম্যানুয়াল)",
+                shopDesc: "নিচের বিএনবি স্মার্ট চেইন ঠিকানায় ফান্ড পাঠিয়ে আপনার স্পিড বাড়ান।",
+                bnbWallet: "বিএনবি স্মার্ট চেইন (BEP20) ঠিকানা:",
+                autoNotice: "⚠️ অটো-পেমেন্ট ফিচারটি তৈরি করা হচ্ছে। অনুগ্রহ করে ম্যানুয়ালি প্রমাণ জমা দিন।",
+                submitProof: "প্রমাণ জমা দিন",
+                teamTitle: "👥 রেফারেল টিম",
+                teamDesc: "স্পিড বাড়াতে আরও বন্ধুদের আমন্ত্রণ জানান! প্রতি সক্রিয় রেফারালে যোগ হয় +০.০০০৫ স্পিড।",
+                refShare: "আপনার লিংক শেয়ার করুন এবং বেশি স্পিড অর্জন
