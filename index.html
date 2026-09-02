@@ -45,14 +45,12 @@
     <div class="header">
         <div class="user-welcome">
             <span id="welcomeText">Welcome,</span>
-            <h3 id="userNameDisplay">Miner 👋</h3>
+            <h3 id="userNameDisplay">Loading... 👋</h3>
         </div>
         <div>
             <select id="langSelect" class="lang-selector" onchange="changeLanguage(this.value)">
                 <option value="en">English</option>
                 <option value="bn">বাংলা</option>
-                <option value="ru">Русский</option>
-                <option value="ur">اردو</option>
             </select>
         </div>
     </div>
@@ -99,28 +97,28 @@
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 1: $0.10</div>
-                    <div style="font-size: 12px; color: #8b949e;" id="tier1Desc">Gets +5 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +5 JASMY Speed Bonus</div>
                 </div>
                 <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn1">Submit Proof</a>
             </div>
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 2: $0.50</div>
-                    <div style="font-size: 12px; color: #8b949e;" id="tier2Desc">Gets +50 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +50 JASMY Speed Bonus</div>
                 </div>
                 <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn2">Submit Proof</a>
             </div>
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 3: $1.00</div>
-                    <div style="font-size: 12px; color: #8b949e;" id="tier3Desc">Gets +100 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +100 JASMY Speed Bonus</div>
                 </div>
                 <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn3">Submit Proof</a>
             </div>
             <div class="boost-card">
                 <div class="boost-info">
                     <div class="boost-title">⚡ Tier 4: $5.00</div>
-                    <div style="font-size: 12px; color: #8b949e;" id="tier4Desc">Gets +500 JASMY Speed Bonus</div>
+                    <div style="font-size: 12px; color: #8b949e;">Gets +500 JASMY Speed Bonus</div>
                 </div>
                 <a href="https://t.me/JASMYMiningAdmin" target="_blank" class="btn" style="width: auto; padding: 8px 15px; margin: 0; background: #238636; text-decoration: none;" id="submitProofBtn4">Submit Proof</a>
             </div>
@@ -205,17 +203,17 @@
         tg.expand();
         
         let userId = "12345";
-        let userName = "Miner";
+        let userName = "User";
 
+        // টেলিগ্রাম থেকে ইউজারের রিয়েল ডাটা ফেচ করার কোড
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             userId = tg.initDataUnsafe.user.id;
-            userName = tg.initDataUnsafe.user.first_name || "Miner";
+            userName = tg.initDataUnsafe.user.first_name || "User";
         }
 
         document.getElementById("userNameDisplay").innerText = userName + " 👋";
         document.getElementById("refLink").value = `https://t.me/JASMYMiningBot?start=user_${userId}`;
 
-        // ভাষা ট্রান্সলেশন অবজেক্ট
         let currentLang = 'en';
         const translations = {
             en: {
@@ -281,4 +279,219 @@
                 submitProof: "প্রমাণ জমা দিন",
                 teamTitle: "👥 রেফারেল টিম",
                 teamDesc: "স্পিড বাড়াতে আরও বন্ধুদের আমন্ত্রণ জানান! প্রতি সক্রিয় রেফারালে যোগ হয় +০.০০০৫ স্পিড।",
-                refShare: "আপনার লিংক শেয়ার করুন এবং বেশি স্পিড অর্জন
+                refShare: "আপনার লিংক শেয়ার করুন এবং বেশি স্পিড অর্জন করুন:",
+                copyLink: "📋 লিংক কপি করুন",
+                activeRef: "আপনার সক্রিয় রেফারেলসমূহ:",
+                activeTag: "সক্রিয় (+০.০০০৫)",
+                earnTitle: "🎯 দৈনিক টাস্কসমূহ",
+                earnDesc: "২৪ ঘণ্টা মাইনিং সচল রাখতে ১ থেকে ৫ নম্বর টাস্ক সম্পূর্ণ করুন।",
+                payoutsTitle: "💰 পে-আউট ও উত্তোলন",
+                payoutsDesc: "আপনার মেইন ব্যালেন্স (USDT) থেকে উত্তোলন করুন।",
+                reqWithTitle: "উত্তোলনের অনুরোধ",
+                availMainBal: "উপলব্ধ মেইন ব্যালেন্স",
+                addrPlaceholder: "USDT ওয়ালেট এড্রেস দিন",
+                amtPlaceholder: "উত্তোলনের জন্য USDT পরিমাণ দিন",
+                reqWithBtn: "উত্তোলনের অনুরোধ করুন (অপেক্ষমাণ)",
+                historyLabel: "উত্তোলনের ইতিহাস:",
+                noHistory: "এখনো কোনো উত্তোলন করা হয়নি",
+                doneText: "✔ সম্পন্ন",
+                miningActiveText: "স্ট্যাটাস: মাইনিং সচল আছে (২৪ ঘণ্টা)",
+                miningRunningBtn: "🚀 মাইনিং চলছে...",
+                taskCompleteAlert: "৫টি টাস্কই সম্পন্ন হয়েছে! ২৪ ঘণ্টার মাইনিং শুরু হয়ে গেছে।",
+                errValidJasmy: "সোয়াপ করার জন্য সঠিক JASMY পরিমাণ দিন!",
+                errMinSwap: "সর্বনিম্ন সোয়াপ পরিমাণ সমান হতে হবে",
+                errInsufficientJasmy: "সোয়াপ করার জন্য পর্যাপ্ত JASMY ব্যালেন্স নেই!",
+                successSwap: "সফলভাবে সোয়াপ হয়েছে",
+                enterAddr: "আপনার USDT ওয়ালেট এড্রেস দিন!",
+                validWithdraw: "উত্তোলনের জন্য সঠিক USDT পরিমাণ দিন!",
+                insufficientBal: "উত্তোলনের জন্য পর্যাপ্ত মেইন ব্যালেন্স নেই!",
+                reqSuccess: "মেইন ব্যালেন্স থেকে উত্তোলনের অনুরোধ সফলভাবে জমা দেওয়া হয়েছে! এটি এখন অনুমোদনের অপেক্ষায় রয়েছে।",
+                copyAlert: "রেফারেল লিংক ক্লিপবোর্ডে কপি করা হয়েছে!"
+            }
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang] || translations['en'];
+            
+            document.getElementById('welcomeText').innerText = t.welcome;
+            document.getElementById('mainBalLabel').innerText = t.mainBal;
+            document.getElementById('minedJasmyLabel').innerText = t.minedJasmy;
+            if(!isMiningActive) {
+                document.getElementById('miningStatusText').innerText = t.miningStatus;
+                document.getElementById('startMiningBtn').innerText = t.miningPausedBtn;
+            }
+            document.getElementById('swapTitle').innerText = t.swapTitle;
+            document.getElementById('swapDesc').innerText = t.swapDesc;
+            document.getElementById('swapAmount').placeholder = t.swapPlaceholder;
+            document.getElementById('swapBtnText').innerText = t.swapBtn;
+            
+            document.getElementById('shopTitle').innerText = t.shopTitle;
+            document.getElementById('shopDesc').innerText = t.shopDesc;
+            document.getElementById('bnbWalletLabel').innerText = t.bnbWallet;
+            document.getElementById('autoPaymentNotice').innerText = t.autoNotice;
+            
+            for(let i=1; i<=4; i++) {
+                document.getElementById(`submitProofBtn${i}`).innerText = t.submitProof;
+            }
+            
+            document.getElementById('teamTitle').innerText = t.teamTitle;
+            document.getElementById('teamDesc').innerText = t.teamDesc;
+            document.getElementById('refShareText').innerText = t.refShare;
+            document.getElementById('copyLinkBtn').innerText = t.copyLink;
+            document.getElementById('activeRefTitle').innerText = t.activeRef;
+            document.getElementById('activeTag').innerText = t.activeTag;
+            
+            document.getElementById('earnTitle').innerText = t.earnTitle;
+            document.getElementById('earnDesc').innerText = t.earnDesc;
+            for(let i=1; i<=5; i++) {
+                document.getElementById(`t${i}Title`).innerText = (lang === 'bn' ? `টাস্ক ${i}` : `Task ${i}`);
+                document.getElementById(`t${i}Desc`).innerText = (lang === 'bn' ? `লিংক ${i} ভিজিট করুন` : `Visit Link ${i}`);
+            }
+            
+            document.getElementById('payoutsTitle').innerText = t.payoutsTitle;
+            document.getElementById('payoutsDesc').innerText = t.payoutsDesc;
+            document.getElementById('reqWithTitle').innerText = t.reqWithTitle;
+            document.getElementById('withdrawAddress').placeholder = t.addrPlaceholder;
+            document.getElementById('withdrawAmount').placeholder = t.amtPlaceholder;
+            document.getElementById('reqWithBtn').innerText = t.reqWithBtn;
+            document.getElementById('historyLabel').innerText = t.historyLabel;
+        }
+
+        function switchTab(tabId, event) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active-section');
+            
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+        }
+
+        let baseSpeed = 0.000000157546;
+        let referralCount = 1; 
+        let referralBonusSpeed = referralCount * 0.0005;
+        let totalSpeed = baseSpeed + referralBonusSpeed;
+
+        let jasmyBalance = 0.0;
+        let mainBalanceUsdt = 0.0;
+        const jasmyPriceInUsdt = 0.005; 
+        const minSwapUsdt = 0.01;
+
+        let isMiningActive = false;
+        let completedTasksCount = 0;
+        const totalTasks = 5;
+
+        document.getElementById('miningSpeedText').innerText = `Speed: ${totalSpeed.toFixed(8)} /s`;
+
+        function handleTask(taskId, targetUrl) {
+            const t = translations[currentLang] || translations['en'];
+            const btn = document.getElementById(taskId);
+            window.open(targetUrl, '_blank');
+            btn.disabled = true;
+            btn.style.background = '#334155';
+            
+            let timeLeft = 5;
+            btn.innerText = `Wait ${timeLeft}s...`;
+
+            let timer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    btn.innerText = `Wait ${timeLeft}s...`;
+                } else {
+                    clearInterval(timer);
+                    btn.innerText = t.doneText;
+                    btn.style.background = '#238636';
+                    completedTasksCount++;
+
+                    if (completedTasksCount === totalTasks) {
+                        isMiningActive = true;
+                        document.getElementById('miningStatusText').innerText = t.miningActiveText;
+                        document.getElementById('startMiningBtn').innerText = t.miningRunningBtn;
+                        document.getElementById('startMiningBtn').style.background = 'linear-gradient(135deg, #0ea5e9, #2563eb)';
+                        alert(t.taskCompleteAlert);
+                    }
+                }
+            }, 1000);
+        }
+
+        setInterval(() => {
+            if (isMiningActive) {
+                jasmyBalance += totalSpeed;
+                let currentUsdValue = jasmyBalance * jasmyPriceInUsdt;
+
+                document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
+                document.getElementById('jasmyUsdValue').innerText = `≈ $${currentUsdValue.toFixed(4)} USDT`;
+            }
+        }, 1000);
+
+        function swapJasmyToUsdt() {
+            const t = translations[currentLang] || translations['en'];
+            const amount = parseFloat(document.getElementById('swapAmount').value);
+            let equivalentUsdt = amount * jasmyPriceInUsdt;
+
+            if (isNaN(amount) || amount <= 0) {
+                alert(t.errValidJasmy);
+                return;
+            }
+            if (equivalentUsdt < minSwapUsdt) {
+                alert(t.errMinSwap + ` $${minSwapUsdt} USDT!`);
+                return;
+            }
+            if (amount > jasmyBalance) {
+                alert(t.errInsufficientJasmy);
+                return;
+            }
+
+            jasmyBalance -= amount;
+            mainBalanceUsdt += equivalentUsdt;
+
+            document.getElementById('jasmyBalance').innerText = jasmyBalance.toFixed(8);
+            document.getElementById('jasmyUsdValue').innerText = `≈ $${(jasmyBalance * jasmyPriceInUsdt).toFixed(4)} USDT`;
+            document.getElementById('mainBalanceBadge').innerText = mainBalanceUsdt.toFixed(2) + " USDT";
+            document.getElementById('payoutMainBalText').innerText = `${t.availMainBal}: ` + mainBalanceUsdt.toFixed(2) + " USDT";
+            
+            document.getElementById('swapAmount').value = '';
+            alert(`${t.successSwap} ` + amount.toFixed(4) + " JASMY into $" + equivalentUsdt.toFixed(4) + " USDT!");
+        }
+
+        function requestWithdrawal() {
+            const t = translations[currentLang] || translations['en'];
+            const address = document.getElementById('withdrawAddress').value;
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+            if (!address) {
+                alert(t.enterAddr);
+                return;
+            }
+            if (isNaN(amount) || amount <= 0) {
+                alert(t.validWithdraw);
+                return;
+            }
+            if (amount > mainBalanceUsdt) {
+                alert(t.insufficientBal);
+                return;
+            }
+
+            mainBalanceUsdt -= amount;
+            document.getElementById('mainBalanceBadge').innerText = mainBalanceUsdt.toFixed(2) + " USDT";
+            document.getElementById('payoutMainBalText').innerText = `${t.availMainBal}: ` + mainBalanceUsdt.toFixed(2) + " USDT";
+            document.getElementById('payoutHistoryText').innerText = "Requested: " + amount.toFixed(2) + " USDT (Pending Approval)";
+            
+            document.getElementById('withdrawAddress').value = '';
+            document.getElementById('withdrawAmount').value = '';
+            alert(t.reqSuccess);
+        }
+
+        function copyRefLink() {
+            const t = translations[currentLang] || translations['en'];
+            var copyText = document.getElementById("refLink");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            alert(t.copyAlert);
+        }
+    </script>
+</body>
+</html>
